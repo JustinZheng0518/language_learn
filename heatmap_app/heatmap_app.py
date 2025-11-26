@@ -25,7 +25,7 @@ class HeatmapApp:
         self.last_detection_time = 0
         self.detect_interval = 2.0  # seconds
 
-    def _maybe_run_detection(self, bg_img):
+    def run_detection(self, bg_img, text_lables):
         """
         Runs object detection every detect_interval seconds.
         """
@@ -36,7 +36,7 @@ class HeatmapApp:
         # Run detector
         self.detections = self.detector.detect(
             bg_img, 
-            text_labels=["car", "person", "flower", "grass", "tree"],
+            text_labels=text_lables,
             threshold=0.3
         )
 
@@ -50,7 +50,7 @@ class HeatmapApp:
 
         plt.ion()
         fig, ax = plt.subplots(figsize=(12, 6))
-
+        text_lables = ["desk", "chair", "floor", "board", "black board"]
         img_handle = ax.imshow(bg, origin="upper")
         ax.set_title("Interactive Heatmap + OmDet-Turbo Detection")
         overlay = bg.copy()
@@ -74,7 +74,7 @@ class HeatmapApp:
                 ).astype(np.uint8)
 
                 # -------- Object detection every 2 seconds --------
-                self._maybe_run_detection(bg)
+                self.run_detection(bg, text_lables)
 
                 # -------- Draw object boxes on overlay --------
                 overlay = self.visualizer.draw(overlay, self.detections)
