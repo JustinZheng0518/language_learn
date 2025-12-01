@@ -11,7 +11,7 @@ class BoxVisualizer:
         • optional highlight of one specific box
     """
 
-    def __init__(self, default_color=(0, 255, 0), thickness=2, font_scale=0.6):
+    def __init__(self, default_color=(0, 255, 0), thickness=2, font_scale=1.0):
         self.default_color = default_color
         self.thickness = thickness
         self.font_scale = font_scale

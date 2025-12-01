@@ -13,12 +13,12 @@ class HeatmapApp:
     Object detection runs every 2 seconds.
     """
 
-    def __init__(self, image_canvas, tracker, heatmap, object_detector, box_visualizer,translator, event_bus):
+    def __init__(self, image_canvas, tracker, heatmap, object_detector, box_visualizer,translator, speaker, event_bus):
         self.canvas = image_canvas
         self.tracker = tracker
         self.heatmap = heatmap
         self.translator = translator
-
+        self.speaker = speaker
         self.detector = object_detector
         self.visualizer = box_visualizer
 
@@ -55,12 +55,12 @@ class HeatmapApp:
 
         self.last_detection_time = now
 
+
     # ---------------------------------------------------------
     # Check heat entering / exiting bounding boxes
     # ---------------------------------------------------------
     def check_heat_events(self, heatmap):
-        threshold = 0.3  # average heat threshold
-
+        threshold = 0.3  
         active_boxes = set()
 
         for i, det in enumerate(self.detections):
@@ -72,16 +72,27 @@ class HeatmapApp:
 
             avg_heat = region.mean() / (heatmap.max() + 1e-6)
 
+            # ---- HEAT ABOVE THRESHOLD ----
             if avg_heat > threshold:
                 active_boxes.add(i)
+
+                # ❗ ONLY trigger on ENTER
                 if i not in self.prev_active_boxes:
+                    german = det.get("label_de", "")
+                    print("shall speak " , german, )
+                    
+                    self.speaker.speak(german)
+
                     self.event_bus.publish(EventType.HEATMAP_ENTER_THRESHOLD, det)
 
+            # ---- HEAT BELOW THRESHOLD ----
             else:
                 if i in self.prev_active_boxes:
                     self.event_bus.publish(EventType.HEATMAP_LEAVE_THRESHOLD, det)
 
+        # Update active set AFTER loop
         self.prev_active_boxes = active_boxes
+
     def filter_boxes_by_heat(self, heatmap, detections, threshold=0.3):
         """
         Return only detections whose average heat exceeds the threshold.
@@ -116,8 +127,29 @@ class HeatmapApp:
 
         plt.ion()
         fig, ax = plt.subplots(figsize=(12, 6))
-        text_labels_en = ["desk", "chair", "floor", "board", "black board"]
-
+        # text_labels_en = ["desk", "chair", "floor", "board", "black board"]
+        text_labels_en =               [
+                            "Lion",
+                            "Tiger",
+                            "Bear",
+                            "Zebra",
+                            "Giraffe",
+                            "Deer",
+                            "Cheetah",
+                            "Elephant",
+                            "Gorilla",
+                            "Hippopotamus",
+                            "Hyena",
+                            "Jaguar",
+                            "Koala",
+                            "Monkey",
+                            "Ostrich",
+                            "Panda",
+                            "Reindeer",
+                            "Rhinoceros",
+                            "Wolf",
+                            "Porcupine"
+                        ]
         text_labels_de = self.translator.translate_many(text_labels_en)
         self.label_map = {
                 en: de for en, de in zip(text_labels_en, text_labels_de)
