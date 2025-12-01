@@ -13,10 +13,11 @@ class HeatmapApp:
     Object detection runs every 2 seconds.
     """
 
-    def __init__(self, image_canvas, tracker, heatmap, object_detector, box_visualizer, event_bus):
+    def __init__(self, image_canvas, tracker, heatmap, object_detector, box_visualizer,translator, event_bus):
         self.canvas = image_canvas
         self.tracker = tracker
         self.heatmap = heatmap
+        self.translator = translator
 
         self.detector = object_detector
         self.visualizer = box_visualizer
@@ -45,7 +46,10 @@ class HeatmapApp:
             text_labels=text_labels,
             threshold=0.3
         )
-
+        for det in self.detections:
+            en = det["label"]
+            det["label_en"] = en
+            det["label_de"] = self.label_map.get(en, "")
         # Publish event
         self.event_bus.publish(EventType.OBJECTS_DETECTED, self.detections)
 
@@ -112,7 +116,12 @@ class HeatmapApp:
 
         plt.ion()
         fig, ax = plt.subplots(figsize=(12, 6))
-        text_labels = ["desk", "chair", "floor", "board", "black board"]
+        text_labels_en = ["desk", "chair", "floor", "board", "black board"]
+
+        text_labels_de = self.translator.translate_many(text_labels_en)
+        self.label_map = {
+                en: de for en, de in zip(text_labels_en, text_labels_de)
+            }
 
         img_handle = ax.imshow(bg, origin="upper")
         ax.set_title("Interactive Heatmap + OmDet-Turbo Detection")
@@ -136,13 +145,17 @@ class HeatmapApp:
                 ).astype(np.uint8)
 
                 # Run object detection
-                self.run_detection(bg, text_labels)
+                self.run_detection(bg, text_labels_en)
 
                 # Fire heatmap events (observer pattern)
                 self.check_heat_events(heatmap)
 
                 # Draw object boxes
                 hot_boxes = self.filter_boxes_by_heat(heatmap, self.detections)
+                for det in hot_boxes:
+                    det["label"] = f"{det['label_en']} / {det['label_de']}"
+
+   
                 overlay = self.visualizer.draw(overlay, hot_boxes)
 
 
