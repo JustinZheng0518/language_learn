@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # 2. Build the app
     app = (
         HeatmapAppBuilder()
-            .with_canvas("language_learn/classroom.jpg")
+            .with_canvas("language_learn/imgs/classroom.jpg")
             .with_mouse_tracker()
             .with_object_detector("omdet")
             .with_visualizer(font_scale=DEFUALT_FONT_SIZE, thickness=DEFUALT_FONT_THICKNESS)
