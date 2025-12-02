@@ -1,62 +1,53 @@
-from heatmap_app.heatmap_app import HeatmapApp
-from heatmap_app.heatmap_generator import HeatmapGenerator
-from heatmap_app.image_canvas import ImageCanvas
-from heatmap_app.mouse_tracker import MouseTracker
+from language_learn.event.event_bus import EventBus
+from language_learn.event.event_type import EventType
+from language_learn.heatmap_app.heatmap_builder import HeatmapAppBuilder
 
-from vision_models.object_detector import OmDetObjectDetector
-from vision_models.box_visualizer import BoxVisualizer
-
-from translator.translator import Translator
-from speech.speaker import GTTSSpeaker
-from event.event_bus import EventBus
-from event.event_type import EventType
-
-
-# ============================================================
-# Event handlers (callbacks)
-# ============================================================
 
 def on_image_loaded(img):
     print("[EVENT] Image loaded:", img.shape)
 
+
 def on_objects_detected(dets):
     print(f"[EVENT] {len(dets)} objects detected")
 
+
 def on_heat_enter(box):
     print("[EVENT] Heat entered box:", box)
+
 
 def on_heat_leave(box):
     print("[EVENT] Heat left box:", box)
 
 
-# ============================================================
-# Main
-# ============================================================
-DEFUALT_GAUSSIAN_SIGMA = 120
-DEFUALT_HEAT_DECAY_RATE = 0.9
+DEFAULT_GAUSSIAN_SIGMA = 120
+DEFAULT_HEAT_DECAY_RATE = 0.9
+DEFUALT_FONT_SIZE = 1.2
+DEFUALT_FONT_THICKNESS = 2
 
 if __name__ == "__main__":
-    # Register event listeners
+    # 1. Event bus
     bus = EventBus()
     bus.subscribe(EventType.IMAGE_LOADED, on_image_loaded)
     bus.subscribe(EventType.OBJECTS_DETECTED, on_objects_detected)
     bus.subscribe(EventType.HEATMAP_ENTER_THRESHOLD, on_heat_enter)
     bus.subscribe(EventType.HEATMAP_LEAVE_THRESHOLD, on_heat_leave)
 
-    # Construct all components
-    canvas = ImageCanvas(mode="image", path="animal.jpg")
-    tracker = MouseTracker()
-    object_detector = OmDetObjectDetector()
-    box_visualizer = BoxVisualizer()
-    speaker = GTTSSpeaker(lang="de")
-    translator = Translator(source_lang="en", target_lang="de")
-    heatmap = HeatmapGenerator(
-        height=canvas.H,
-        width=canvas.W,
-        sigma=DEFUALT_GAUSSIAN_SIGMA,
-        decay=DEFUALT_HEAT_DECAY_RATE
+    # 2. Build the app
+    app = (
+        HeatmapAppBuilder()
+            .with_canvas("language_learn/classroom.jpg")
+            .with_mouse_tracker()
+            .with_object_detector("omdet")
+            .with_visualizer(font_scale=DEFUALT_FONT_SIZE, thickness=DEFUALT_FONT_THICKNESS)
+            .with_translator("en", "de")
+            .with_speaker("de")
+            .with_heatmap(sigma=DEFAULT_GAUSSIAN_SIGMA, decay=DEFAULT_HEAT_DECAY_RATE)
+            .with_event_bus()   
+            .build()
     )
 
-    # Launch app
-    app = HeatmapApp(canvas, tracker, heatmap, object_detector, box_visualizer, translator, speaker, bus)
+    # 3. Inject the bus into the app
+    app.event_bus = bus
+
+    # 4. Start the application
     app.run()

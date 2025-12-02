@@ -3,8 +3,8 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 
-from event.event_bus import EventBus
-from event.event_type import EventType
+from language_learn.event.event_bus import EventBus
+from language_learn.event.event_type import EventType
 
 
 class HeatmapApp:
@@ -76,7 +76,7 @@ class HeatmapApp:
             if avg_heat > threshold:
                 active_boxes.add(i)
 
-                # ❗ ONLY trigger on ENTER
+             
                 if i not in self.prev_active_boxes:
                     german = det.get("label_de", "")
                     print("shall speak " , german, )
@@ -127,29 +127,29 @@ class HeatmapApp:
 
         plt.ion()
         fig, ax = plt.subplots(figsize=(12, 6))
-        # text_labels_en = ["desk", "chair", "floor", "board", "black board"]
-        text_labels_en =               [
-                            "Lion",
-                            "Tiger",
-                            "Bear",
-                            "Zebra",
-                            "Giraffe",
-                            "Deer",
-                            "Cheetah",
-                            "Elephant",
-                            "Gorilla",
-                            "Hippopotamus",
-                            "Hyena",
-                            "Jaguar",
-                            "Koala",
-                            "Monkey",
-                            "Ostrich",
-                            "Panda",
-                            "Reindeer",
-                            "Rhinoceros",
-                            "Wolf",
-                            "Porcupine"
-                        ]
+        text_labels_en = ["desk", "chair", "floor", "board", "black board"]
+        # text_labels_en =               [
+        #                     "Lion",
+        #                     "Tiger",
+        #                     "Bear",
+        #                     "Zebra",
+        #                     "Giraffe",
+        #                     "Deer",
+        #                     "Cheetah",
+        #                     "Elephant",
+        #                     "Gorilla",
+        #                     "Hippopotamus",
+        #                     "Hyena",
+        #                     "Jaguar",
+        #                     "Koala",
+        #                     "Monkey",
+        #                     "Ostrich",
+        #                     "Panda",
+        #                     "Reindeer",
+        #                     "Rhinoceros",
+        #                     "Wolf",
+        #                     "Porcupine"
+        #                 ]
         text_labels_de = self.translator.translate_many(text_labels_en)
         self.label_map = {
                 en: de for en, de in zip(text_labels_en, text_labels_de)
