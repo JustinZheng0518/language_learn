@@ -1,0 +1,5 @@
+desk
+chair
+floor
+board
+black board

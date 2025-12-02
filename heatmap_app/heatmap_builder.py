@@ -20,6 +20,7 @@ class HeatmapAppBuilder:
         self.visualizer = None
         self.translator = None
         self.speaker = None
+        self.text_labels = None
         self.bus = None
 
     def with_canvas(self, path, mode="image"):
@@ -58,14 +59,30 @@ class HeatmapAppBuilder:
 
         self.heatmap = HeatmapGenerator(height=height, width=width, sigma=sigma, decay=decay)
         return self
+    
+    def with_text_lables(self, text_labels):
+        self.text_labels = text_labels
+        return self
 
+
+
+    def with_text_labels_file(self, filepath):
+        import os
+        if not os.path.exists(filepath):
+            raise FileNotFoundError(f"Label file not found: {filepath}")
+
+        with open(filepath, "r", encoding="utf-8") as f:
+            labels = [line.strip() for line in f.readlines() if line.strip()]
+
+        self.text_labels = labels
+        return self
     def with_event_bus(self):
         self.bus = EventBus()
         return self
 
     def build(self):
         if not all([self.canvas, self.tracker, self.heatmap, self.detector,
-                    self.visualizer, self.translator, self.speaker, self.bus]):
+                    self.visualizer, self.translator,self.text_labels, self.speaker, self.bus]):
             raise ValueError("Builder missing components")
 
         return HeatmapApp(
@@ -76,5 +93,6 @@ class HeatmapAppBuilder:
             self.visualizer,
             self.translator,
             self.speaker,
+            self.text_labels,
             self.bus
         )
