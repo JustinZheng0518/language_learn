@@ -113,9 +113,7 @@ class HeatmapApp:
 
         return filtered
 
-    # ---------------------------------------------------------
-    # Facade Step 1: Update mouse position + heatmap
-    # ---------------------------------------------------------
+
     def _update_cursor_and_heatmap(self):
         x = int(self.tracker.x / self.canvas.W * self.canvas.W)
         y = int(self.tracker.y / self.canvas.H * self.canvas.H)
@@ -126,9 +124,7 @@ class HeatmapApp:
         return x, y, self.heatmap.get()
 
 
-    # ---------------------------------------------------------
-    # Facade Step 2: Build overlay heatmap on the image
-    # ---------------------------------------------------------
+
     def _update_heat_overlay(self, bg, heatmap):
         heat_norm = heatmap / (heatmap.max() + 1e-6)
         overlay = (
@@ -137,29 +133,22 @@ class HeatmapApp:
         return overlay
 
 
-    # ---------------------------------------------------------
-    # Facade Step 3: Run detection + heat event checks
-    # ---------------------------------------------------------
     def _run_object_pipeline(self, bg, heatmap, text_labels):
-        # 1. object detection
+
         self.run_detection(bg, text_labels)
 
-        # 2. heat enter / leave event triggers
+
         self.check_heat_events(heatmap)
 
-        # 3. filter hot boxes
+  
         hot_boxes = self.filter_boxes_by_heat(heatmap, self.detections)
 
-        # 4. combine German labels
+   
         for det in hot_boxes:
             det["label"] = f"{det['label_en']} / {det['label_de']}"
 
         return hot_boxes
 
-
-    # ---------------------------------------------------------
-    # Facade Step 4: Draw bounding boxes + update display
-    # ---------------------------------------------------------
     def _draw_and_refresh(self, ax, img_handle, overlay, hot_boxes, x, y):
         overlay = self.visualizer.draw(overlay, hot_boxes)
 
@@ -195,16 +184,16 @@ class HeatmapApp:
         try:
             while self.tracker.running:
 
-                # Step 1 — update heatmap from cursor
+                # update heatmap 
                 x, y, heatmap = self._update_cursor_and_heatmap()
 
-                # Step 2 — update heat overlay on the background image
+                # update heat overlay on the background image
                 overlay = self._update_heat_overlay(self.bg, heatmap)
 
-                # Step 3 — run detection + heat events + label fusion
+                # run detection + heat events + label fusion
                 hot_boxes = self._run_object_pipeline(self.bg, heatmap, self.text_labels_en)
 
-                # Step 4 — draw boxes + refresh UI
+                #  draw boxes + refresh UI
                 self._draw_and_refresh(self.ax, self.img_handle, overlay, hot_boxes, x, y)
 
         except KeyboardInterrupt:

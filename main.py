@@ -25,14 +25,14 @@ DEFUALT_FONT_SIZE = 1.2
 DEFUALT_FONT_THICKNESS = 2
 
 if __name__ == "__main__":
-    # 1. Event bus
+ 
     bus = EventBus()
     bus.subscribe(EventType.IMAGE_LOADED, on_image_loaded)
     bus.subscribe(EventType.OBJECTS_DETECTED, on_objects_detected)
     bus.subscribe(EventType.HEATMAP_ENTER_THRESHOLD, on_heat_enter)
     bus.subscribe(EventType.HEATMAP_LEAVE_THRESHOLD, on_heat_leave)
 
-    # 2. Build the app
+
     app = (
         HeatmapAppBuilder()
             .with_canvas("language_learn/imgs/classroom.jpg")
@@ -41,13 +41,10 @@ if __name__ == "__main__":
             .with_visualizer(font_scale=DEFUALT_FONT_SIZE, thickness=DEFUALT_FONT_THICKNESS)
             .with_heatmap(sigma=DEFAULT_GAUSSIAN_SIGMA, decay=DEFAULT_HEAT_DECAY_RATE)
             .with_text_labels_file("language_learn/text_labels/classroom.txt")
-            .with_language("fr")
-            .with_event_bus()   
+            .with_language("de")
+            .with_event_bus(bus)   
             .build()
     )
 
-    # 3. Inject the bus into the app
-    app.event_bus = bus
 
-    # 4. Start the application
     app.run()

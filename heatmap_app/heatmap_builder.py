@@ -89,8 +89,8 @@ class HeatmapAppBuilder:
 
         self.text_labels = labels
         return self
-    def with_event_bus(self):
-        self.bus = EventBus()
+    def with_event_bus(self, bus):
+        self.bus = bus
         return self
 
     def build(self):
