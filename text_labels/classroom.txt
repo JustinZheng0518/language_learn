@@ -3,3 +3,6 @@ chair
 floor
 board
 black board
+window
+glass
+wall

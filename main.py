@@ -25,22 +25,24 @@ DEFUALT_FONT_SIZE = 1.2
 DEFUALT_FONT_THICKNESS = 2
 
 if __name__ == "__main__":
- 
+# observer pattern & singleton pattern
     bus = EventBus()
     bus.subscribe(EventType.IMAGE_LOADED, on_image_loaded)
     bus.subscribe(EventType.OBJECTS_DETECTED, on_objects_detected)
     bus.subscribe(EventType.HEATMAP_ENTER_THRESHOLD, on_heat_enter)
     bus.subscribe(EventType.HEATMAP_LEAVE_THRESHOLD, on_heat_leave)
 
-
+# build pattern
     app = (
         HeatmapAppBuilder()
-            .with_canvas("language_learn/imgs/classroom.jpg")
+            .with_canvas("language_learn/imgs/livingroom.jpg")
             .with_mouse_tracker()
             .with_object_detector("omdet")
             .with_visualizer(font_scale=DEFUALT_FONT_SIZE, thickness=DEFUALT_FONT_THICKNESS)
             .with_heatmap(sigma=DEFAULT_GAUSSIAN_SIGMA, decay=DEFAULT_HEAT_DECAY_RATE)
             .with_text_labels_file("language_learn/text_labels/classroom.txt")
+
+            # fr for french and de for german
             .with_language("de")
             .with_event_bus(bus)   
             .build()

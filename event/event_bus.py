@@ -1,6 +1,6 @@
 class EventBus:
     _instance = None
-
+# singleton pattern
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(EventBus, cls).__new__(cls)

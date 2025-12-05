@@ -12,7 +12,7 @@ class HeatmapApp:
     Interactive heatmap + periodic object detection + event-based architecture.
     Object detection runs every 2 seconds.
     """
-
+# dependenty injection
     def __init__(self, image_canvas, tracker, heatmap, object_detector, box_visualizer,translator, speaker, text_lables, event_bus):
         self.canvas = image_canvas
         self.tracker = tracker

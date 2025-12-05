@@ -97,7 +97,7 @@ class HeatmapAppBuilder:
         if not all([self.canvas, self.tracker, self.heatmap, self.detector,
                     self.visualizer, self.translator,self.text_labels, self.speaker, self.bus]):
             raise ValueError("Builder missing components")
-
+# dependenty injection
         return HeatmapApp(
             self.canvas,
             self.tracker,
