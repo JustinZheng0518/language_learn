@@ -30,11 +30,14 @@ class OmDetObjectDetector:
         else:
             image = image_rgb
 
+        image = image.resize((224, 224))
+
         # Prepare data
         inputs = self.processor(
             images=image,
             text=text_labels,
-            return_tensors="pt"
+            return_tensors="pt",
+            do_resize=False
         ).to(self.device)
 
         # Inference
@@ -59,3 +62,4 @@ class OmDetObjectDetector:
             })
 
         return detections
+

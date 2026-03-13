@@ -33,6 +33,13 @@ class HeatmapApp:
      
         self.event_bus = event_bus
 
+        import tkinter as tk
+
+        root = tk.Tk()
+        self.screen_w = root.winfo_screenwidth()
+        self.screen_h = root.winfo_screenheight()
+        root.destroy()
+
     # ---------------------------------------------------------
     # Object Detection (2-second interval)
     # ---------------------------------------------------------
@@ -113,14 +120,17 @@ class HeatmapApp:
 
         return filtered
 
-
     def _update_cursor_and_heatmap(self):
-        x = int(self.tracker.x / self.canvas.W * self.canvas.W)
-        y = int(self.tracker.y / self.canvas.H * self.canvas.H)
+
+        # screen → image scaling
+        x = int(self.tracker.x * self.canvas.W / self.screen_w)
+        y = int(self.tracker.y * self.canvas.H / self.screen_h)
+
         x = np.clip(x, 0, self.canvas.W - 1)
         y = np.clip(y, 0, self.canvas.H - 1)
 
         self.heatmap.step(x, y)
+
         return x, y, self.heatmap.get()
 
 

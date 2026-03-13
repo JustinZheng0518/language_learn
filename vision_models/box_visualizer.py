@@ -21,7 +21,7 @@ class BoxVisualizer:
         """Optionally set unique color for a label string."""
         self.label_colors[label] = color
 
-    def draw(self, image_rgb, detections, highlight_index=None):
+    def draw(self, image_rgb, detections, highlight_index=None, model_size=224):
         """
         Draw multiple bounding box edges.
 
@@ -34,10 +34,21 @@ class BoxVisualizer:
 
         img = image_rgb.copy()
 
+        h, w = img.shape[:2]
+        scale_x = w / model_size
+        scale_y = h / model_size
+
         for i, det in enumerate(detections):
-            x1, y1, x2, y2 = map(int, det["box"])
+            
             label = det["label"]
             score = det["score"]
+
+            x1, y1, x2, y2 = det["box"]
+
+            x1 = int(x1 * scale_x)
+            x2 = int(x2 * scale_x)
+            y1 = int(y1 * scale_y)
+            y2 = int(y2 * scale_y)
 
             # Determine color and thickness
             if i == highlight_index:

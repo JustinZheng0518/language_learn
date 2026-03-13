@@ -8,9 +8,15 @@ class ImageCanvas:
         self.path = path
 
         # detect screen size
-        user32 = ctypes.windll.user32
-        self.W = user32.GetSystemMetrics(0)
-        self.H = user32.GetSystemMetrics(1)
+        # user32 = ctypes.windll.user32
+        
+        # self.W = user32.GetSystemMetrics(0)
+        # self.H = user32.GetSystemMetrics(1)
+        import tkinter as tk
+        root = tk.Tk()
+        self.W = root.winfo_screenwidth()
+        self.H = root.winfo_screenheight()
+        root.destroy()
 
     def load(self):
         if self.mode == "blue_background":
